@@ -14,6 +14,7 @@
 # $TEST_RUN_CMD - this environment variable will be passed to container and this command will be used to run the test
 # $EXTRA_RUN_TEST_ARGS - any extra arguments for run_tests.sh
 ##
+set -x
 
 docker=docker
 testbed=/opt/contrail/utils/fabfile/testbeds/testbed.py
@@ -80,9 +81,10 @@ nocolor () {
 # Provided Docker image available?
 is_image_available () {
     tag=${1:-$pos_arg}
-    repo=${tag%:*}
-    version=${tag#*:}
+    repo=$(echo "$tag" | sed -s 's/:[^:]\+$//')
+    version=$(echo "$tag" | awk -F: '{print $NF}')
     $docker images $repo | grep -q $version
+    true
 }
 
 # Is container available?
